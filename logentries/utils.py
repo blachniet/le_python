@@ -36,6 +36,7 @@ def dbg(msg):
 
 
 class SocketAppender(threading.Thread):
+
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -103,9 +104,16 @@ class SocketAppender(threading.Thread):
 
         self.closeConnection()
 
+    def empty(self):
+        """Indicates whether this appender has log entries waiting to be sent.
+
+        Returns:
+            True if all log entries have been sent, False otherwise.
+        """
+        return self._queue.empty()
 
 class LogentriesHandler(logging.Handler):
-    def __init__(self, token):
+    def __init__(self, token, block_on_flush=False):
         logging.Handler.__init__(self)
         self.token = token
         self.good_config = True
@@ -117,6 +125,7 @@ class LogentriesHandler(logging.Handler):
         self.setFormatter(format)
         self.setLevel(logging.DEBUG)
         self._thread = SocketAppender()
+        self._block_on_flush = block_on_flush
 
     @property
     def _started(self):
@@ -132,5 +141,10 @@ class LogentriesHandler(logging.Handler):
 
         self._thread._queue.put(msg)
 
+    def flush(self):
+        while self._block_on_flush and not self._thread.empty():
+            pass
+
     def close(self):
+        self._thread.closeConnection()
         logging.Handler.close(self)
