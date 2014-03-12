@@ -26,7 +26,7 @@ Usage
 
     log = logging.getLogger('logentries')
 
-    test = LogentriesHandler(LOGENTRIES_TOKEN)
+    test = LogentriesHandler(LOGENTRIES_TOKEN, block_on_flush=True)
 
     log.addHandler(test)
 	log.setLevel(logging.INFO)    #WARN by default
