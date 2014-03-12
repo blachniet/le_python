@@ -35,6 +35,8 @@ Usage
 Configure
 ---------
 
+To ensure that all log messages are sent to Logentries before closing the handler, set `block_on_flush=True` in the constructor. The default is false, which means that unsent log messages are discarded.
+
 The parameter `LOGENTRIES_TOKEN` needs to be filled in to point to a file in your Logentries account.
 
 In your Logentries account, create a new host, giving it a name that represents your app. Then create a logfile, selecting `Token TCP` as the source_type. This will print a Token UUID
